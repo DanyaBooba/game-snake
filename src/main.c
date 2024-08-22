@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#define DEBUG 1
+
 #define SIZE 20
 
 #define POINT_EMPTY 0
@@ -11,7 +13,6 @@
 #define PRINT_APPLE "&"
 
 #define DEFAULT_SNAKE_SIZE 3
-#define DIR_UP_RIGHT_BOTTOM_LEFT 1
 
 struct {
     int x;
@@ -20,9 +21,13 @@ struct {
 
 pointPosition head;
 pointPosition end;
+
 int needBreakEnd = 1;
+int step = 0;
 
 int Field[SIZE][SIZE];
+int GameContinue = 1;
+int DIR_UP_RIGHT_BOTTOM_LEFT = 1;
 
 void FieldInit();
 void FieldPrint();
@@ -41,8 +46,7 @@ int main(int argc, char * argv[]) {
     FieldInit();
     SpawnSnakeDefault();
 
-    int step = 0;
-    while(1) {
+    while(GameContinue) {
         step += 1;
 
         FieldPrint();
@@ -52,6 +56,8 @@ int main(int argc, char * argv[]) {
 
         getchar();
     }
+
+    printf("Игра окончена.\n");
 
     return 0;
 }
@@ -88,6 +94,10 @@ void FieldPrint() {
         }
         printf("\n");
     }
+
+    if(DEBUG) {
+        printf("Шаг: %d\n", step);
+    }
 }
 
 //
@@ -118,7 +128,7 @@ void SpawnSnakeDefault() {
 void FieldUpdate() {
     pointPosition newHead = GetNewPoint(head);
     if(newHead.x < 0 || newHead.x >= SIZE || newHead.y < 0 || newHead.y >= SIZE) {
-        printf("Игра окончена");
+        GameContinue = 0;
         return;
     }
 
