@@ -23,7 +23,7 @@ pointPosition head;
 pointPosition end;
 
 int needBreakEnd = 1;
-int step = 0;
+int step = 1;
 
 int Field[SIZE][SIZE];
 int GameContinue = 1;
@@ -47,12 +47,12 @@ int main(int argc, char * argv[]) {
     SpawnSnakeDefault();
 
     while(GameContinue) {
-        step += 1;
-
         FieldPrint();
         FieldUpdate();
 
-        // if(step == 4) DIR_UP_RIGHT_BOTTOM_LEFT = 0;
+        if(step == 3) DIR_UP_RIGHT_BOTTOM_LEFT = 2;
+
+        step += 1;
 
         getchar();
     }
@@ -97,6 +97,9 @@ void FieldPrint() {
 
     if(DEBUG) {
         printf("Шаг: %d\n", step);
+        printf("Удаляем хвост: %s\n", (needBreakEnd ? "да" : "нет"));
+        printf("Коор головы: (%d;%d)\n", head.x, head.y);
+        printf("Коор хвоста: (%d;%d)\n", end.x, end.y);
     }
 }
 
@@ -136,6 +139,11 @@ void FieldUpdate() {
         needBreakEnd = 0;
     }
 
+    if(Point(newHead) == POINT_SNAKE) {
+        GameContinue = 0;
+        return;
+    }
+
     head = newHead;
     SetPoint(head, POINT_SNAKE);
 
@@ -162,7 +170,7 @@ pointPosition GetNewPoint(pointPosition point) {
         newHead.y += 1;
     }
     else if(dir == 2) {
-        newHead.x -= 1;
+        newHead.x += 1;
     }
     else if(dir == 3) {
         newHead.y -= 1;
