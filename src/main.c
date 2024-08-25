@@ -4,6 +4,7 @@
 
 #define SIZE 20
 
+#define POINT_ERROR -1
 #define POINT_EMPTY 0
 #define POINT_SNAKE 1
 #define POINT_APPLE 2
@@ -27,14 +28,15 @@ int step = 1;
 
 int Field[SIZE][SIZE];
 int GameContinue = 1;
-int DIR_UP_RIGHT_BOTTOM_LEFT = 1;
+int DIR_UP_RIGHT_BOTTOM_LEFT = 0;
 
 void FieldInit();
 void FieldPrint();
 void ClearTerminal();
 void SpawnSnakeDefault();
 void FieldUpdate();
-pointPosition GetNewPoint(pointPosition point);
+pointPosition GetNewPointHead();
+pointPosition FindNewPointEnd();
 int Point(pointPosition pos);
 void SetPoint(pointPosition pos, int value);
 
@@ -51,6 +53,8 @@ int main(int argc, char * argv[]) {
         FieldUpdate();
 
         if(step == 3) DIR_UP_RIGHT_BOTTOM_LEFT = 2;
+
+        if(step == 6) DIR_UP_RIGHT_BOTTOM_LEFT = 0;
 
         step += 1;
 
@@ -100,6 +104,7 @@ void FieldPrint() {
         printf("Удаляем хвост: %s\n", (needBreakEnd ? "да" : "нет"));
         printf("Коор головы: (%d;%d)\n", head.x, head.y);
         printf("Коор хвоста: (%d;%d)\n", end.x, end.y);
+        printf("Направление (URBL): %d\n", DIR_UP_RIGHT_BOTTOM_LEFT);
     }
 }
 
@@ -129,7 +134,8 @@ void SpawnSnakeDefault() {
 //
 
 void FieldUpdate() {
-    pointPosition newHead = GetNewPoint(head);
+    pointPosition newHead = GetNewPointHead();
+    // printf("new head: %d %d", newHead.x, newHead.y);
     if(newHead.x < 0 || newHead.x >= SIZE || newHead.y < 0 || newHead.y >= SIZE) {
         GameContinue = 0;
         return;
@@ -148,7 +154,7 @@ void FieldUpdate() {
     SetPoint(head, POINT_SNAKE);
 
     if(needBreakEnd) {
-        pointPosition newEnd = GetNewPoint(end);
+        pointPosition newEnd = FindNewPointEnd();
         SetPoint(end, POINT_EMPTY);
         end = newEnd;
     }
@@ -159,8 +165,8 @@ void FieldUpdate() {
 // Получить координаты "новой" головы
 //
 
-pointPosition GetNewPoint(pointPosition point) {
-    pointPosition newHead = point;
+pointPosition GetNewPointHead() {
+    pointPosition newHead = head;
     int dir = DIR_UP_RIGHT_BOTTOM_LEFT;
 
     if(dir == 0) {
@@ -183,11 +189,26 @@ pointPosition GetNewPoint(pointPosition point) {
 }
 
 //
+// Поиск нового хвоста
+//
+
+pointPosition FindNewPointEnd() {
+    pointPosition newEnd = end;
+
+    if(Point((pointPosition) { end.x - 1, end.y }) == POINT_SNAKE) newEnd = (pointPosition) { end.x - 1, end.y };
+    if(Point((pointPosition) { end.x + 1, end.y }) == POINT_SNAKE) newEnd = (pointPosition) { end.x + 1, end.y };
+    if(Point((pointPosition) { end.x, end.y - 1 }) == POINT_SNAKE) newEnd = (pointPosition) { end.x, end.y - 1 };
+    if(Point((pointPosition) { end.x, end.y + 1 }) == POINT_SNAKE) newEnd = (pointPosition) { end.x, end.y + 1 };
+
+    return newEnd;
+}
+
+//
 // Получить точку по координатам
 //
 
 int Point(pointPosition pos) {
-    return Field[pos.x][pos.y];
+    return (pos.x < 0 || pos.x >= SIZE || pos.y < 0 || pos.y >= SIZE) ? POINT_ERROR : Field[pos.x][pos.y];
 }
 
 //
