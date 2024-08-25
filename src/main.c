@@ -7,13 +7,12 @@
 #define POINT_ERROR -1
 #define POINT_EMPTY 0
 #define POINT_SNAKE 1
-#define POINT_APPLE 2
+#define POINT_WALL 2
+#define POINT_APPLE 3
 
 #define PRINT_EMPTY "."
 #define PRINT_SNAKE "x"
 #define PRINT_APPLE "&"
-
-#define DEFAULT_SNAKE_SIZE 3
 
 struct {
     int x;
@@ -28,7 +27,7 @@ int step = 1;
 
 int Field[SIZE][SIZE];
 int GameContinue = 1;
-int DIR_UP_RIGHT_BOTTOM_LEFT = 0;
+int DIR_UP_RIGHT_BOTTOM_LEFT = 1;
 
 void FieldInit();
 void FieldPrint();
@@ -52,9 +51,8 @@ int main(int argc, char * argv[]) {
         FieldPrint();
         FieldUpdate();
 
-        if(step == 3) DIR_UP_RIGHT_BOTTOM_LEFT = 2;
-
-        if(step == 6) DIR_UP_RIGHT_BOTTOM_LEFT = 0;
+        // if(step == 3) DIR_UP_RIGHT_BOTTOM_LEFT = 2;
+        // if(step == 6) DIR_UP_RIGHT_BOTTOM_LEFT = 0;
 
         step += 1;
 
@@ -170,7 +168,7 @@ pointPosition GetNewPointHead() {
     int dir = DIR_UP_RIGHT_BOTTOM_LEFT;
 
     if(dir == 0) {
-        newHead.x += 1;
+        newHead.x -= 1;
     }
     else if(dir == 1) {
         newHead.y += 1;
