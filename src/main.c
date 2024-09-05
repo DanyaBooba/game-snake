@@ -133,7 +133,6 @@ void SpawnSnakeDefault() {
 
 void FieldUpdate() {
     pointPosition newHead = GetNewPointHead();
-    // printf("new head: %d %d", newHead.x, newHead.y);
     if(newHead.x < 0 || newHead.x >= SIZE || newHead.y < 0 || newHead.y >= SIZE) {
         GameContinue = 0;
         return;
